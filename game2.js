@@ -285,7 +285,7 @@ function draw() {
     drawScore();
     drawLives();
     
-    if(points>=0){
+    if(points>=25){
         py+=2;
         drawpowerup();
         if(py> canvas.height-paddleHeight && py< canvas.height && px<paddleX+paddleWidth && px > paddleX){
