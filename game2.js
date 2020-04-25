@@ -115,7 +115,7 @@ function Ball(x,y,color){
     this.x = x;
     this.y = y;
     this.dx = 6;
-    this.dy = 6;
+    this.dy = -6;
     this.color=color
 
     this.drawball = function(){
@@ -210,7 +210,7 @@ function Ball(x,y,color){
             numofbricks=  level3(brickColumnCount,brickRowCount,numofbricks,bricks);
         }
     
-        console.log(numofbricks);
+        
     
         if(levelnum==3 && numofbricks==0){
             alert('YOU HAVE WON THE GAME');
@@ -238,7 +238,7 @@ function draw() {
         
         py+=2;
         drawpowerup(px,py);
-        if(py+10> canvas.height-paddleHeight && py< canvas.height-paddleHeight+1 && px+10<paddleX+paddleWidth && px+10 > paddleX){
+        if(py+7> canvas.height-paddleHeight && py+7< canvas.height && px+7<paddleX+paddleWidth && px+7> paddleX){
             powerupball++;
             if(powerupball==1){
                 var x=canvas.width/2;
@@ -250,7 +250,7 @@ function draw() {
             }
           
         }
-
+        console.log(powerupball);
 
 
         if(livelost==true && (power ==true)){
@@ -270,7 +270,7 @@ function draw() {
         
     
     
-    console.log(balls.length);
+
 
     while(balls.length < numofballs){
         var x=canvas.width/2;
