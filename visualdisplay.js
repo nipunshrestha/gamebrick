@@ -8,7 +8,7 @@ var paddleWidth = 105;
 
 function drawpowerup(px,py){
     ctx.beginPath();
-    ctx.arc(px, py, 10, 0, Math.PI * 2, false);
+    ctx.arc(px, py, 7, 0, Math.PI * 2, false);
     ctx.fillStyle = "green";
     ctx.fill();
     ctx.closePath();
