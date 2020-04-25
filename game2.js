@@ -1,12 +1,14 @@
+import {drawpowerup,drawScore,drawLives,drawPaddle} from "./visualdisplay.js";
+import {level2,level3} from "./levelup.js";
+
 var canvas = document.getElementById('mycanvas');
 var ctx = canvas.getContext("2d");
 
-var paddleHeight = 10;
 var paddleWidth = 105;
 var paddleX = (canvas.width-paddleWidth)/2;
+var paddleHeight = 10;
 var rightPressed = false;
 var leftPressed = false;
-
 var lives =3 ;
 var brickRowCount = 6;
 var brickColumnCount = 7;
@@ -16,13 +18,14 @@ var brickPadding = 10;
 var brickOffsetTop = 40;
 var brickOffsetLeft = 0;
 var numofbricks=0;
-
 var points = 0 ;
 var numofballs = 1 ;
 var levelnum=1 ;
 var px= canvas.width/2;
 var py=0;
 var livelost = false;
+var powerupball=0;
+
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
@@ -44,39 +47,6 @@ if( levelnum == 1 ){
     }
    
 }
-
-
-function level2(){
-    for(var c=0; c<brickColumnCount; c++) {
-        for(var r=0; r<brickRowCount; r++) {
-            numofbricks++;
-            bricks[c][r].status =1 ;
-        }
-    }
-    for(var c=2; c<brickColumnCount-2; c++) {
-        for(var r=1; r<brickRowCount-1; r++) {
-            numofbricks--;
-            bricks[c][r].status =0 ;
-        }
-    }
-}
-
-function level3(){
-    for(var c=0; c<brickColumnCount; c++) {
-        for(var r=0; r<brickRowCount; r++) {
-            numofbricks++;
-            bricks[c][r].status =1 ;
-        }
-    }
-    for(var c=2; c<brickColumnCount-2; c++) {
-        for(var r=1; r<brickRowCount-1; r++) {
-            numofbricks++;
-            bricks[c][r].status =2 ;
-        }
-    }
-
-}
-    
 
 
 function keyDownHandler(e) {
@@ -139,25 +109,19 @@ function drawBricks() {
     }
 }
 
-function drawPaddle() {
-    ctx.beginPath();
-    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-}
 
-function Ball(x,y){
+function Ball(x,y,color){
     this.ballRadius = 10;
     this.x = x;
     this.y = y;
     this.dx = 6;
     this.dy = 6;
+    this.color=color
 
     this.drawball = function(){
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2, false);
-        ctx.fillStyle = "#FF0000";
+        ctx.fillStyle = this.color;
         ctx.fill();
         ctx.closePath();
     }
@@ -232,15 +196,18 @@ function Ball(x,y){
             this.y=canvas.height-30;
             paddleX = (canvas.width-paddleWidth)/2;
             levelnum++;
-            level2();
+            level2(brickColumnCount,brickRowCount,numofbricks,bricks);
+            numofbricks=  level2(brickColumnCount,brickRowCount,numofbricks,bricks);
         }
-    
+        
         
         if(numofbricks==0 && levelnum==2){
             this.y=canvas.height-30;
+            this.x= paddleX;
             paddleX = (canvas.width-paddleWidth)/2;
             levelnum++;
-            level3();
+            level3(brickColumnCount,brickRowCount,numofbricks,bricks);
+            numofbricks=  level3(brickColumnCount,brickRowCount,numofbricks,bricks);
         }
     
         console.log(numofbricks);
@@ -255,24 +222,6 @@ function Ball(x,y){
 
 }
 
-function drawpowerup(){
-    ctx.beginPath();
-    ctx.arc(px, py, 10, 0, Math.PI * 2, false);
-    ctx.fillStyle = "green";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function drawScore() {
-  ctx.font = "16px Arial";
-  ctx.fillStyle = "black";
-  ctx.fillText("Score: "+points, 8, 20);
-}
-function drawLives() {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "black";
-    ctx.fillText("Lives: "+lives, canvas.width-65, 20);
-  }
 
 var balls=[];
 var power=false;
@@ -281,21 +230,25 @@ function draw() {
     ctx.fillStyle = 'rgba(233, 255, 255)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawBricks();
-    drawPaddle();
-    drawScore();
-    drawLives();
+    drawPaddle(paddleX);
+    drawScore(points);
+    drawLives(lives);
     
-    if(points>=25){
+    if(points>=0){
+        
         py+=2;
-        drawpowerup();
-        if(py> canvas.height-paddleHeight && py< canvas.height && px<paddleX+paddleWidth && px > paddleX){
-
-            var x=canvas.width/2;
-            var y=canvas.height-30;
-            var ball=new Ball(x,y);
-            balls.push(ball);    
-            power=true;
-            px=10000;
+        drawpowerup(px,py);
+        if(py+10> canvas.height-paddleHeight && py< canvas.height-paddleHeight+1 && px+10<paddleX+paddleWidth && px+10 > paddleX){
+            powerupball++;
+            if(powerupball==1){
+                var x=canvas.width/2;
+                var y=canvas.height-30;
+                var ball=new Ball(x,y,"green");
+                balls.push(ball);    
+                power=true;
+               
+            }
+          
         }
 
 
@@ -309,6 +262,7 @@ function draw() {
         if( points==42 && power==true){
             balls.pop();   
             power=false;
+            
         }
 
         
@@ -321,7 +275,7 @@ function draw() {
     while(balls.length < numofballs){
         var x=canvas.width/2;
         var y=canvas.height-30;
-        var ball=new Ball(x,y);
+        var ball=new Ball(x,y,"#FF0000");
         balls.push(ball); 
     }
 
